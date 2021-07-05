@@ -1,22 +1,11 @@
-const express = require("express");
-const app = express();
-const socket = require("socket.io");
-const color = require("colors");
-const cors = require("cors");
-const { get_Current_User, user_Disconnect, join_User } = require("./dummyuser");
+const { io } = require("./index");
 
-app.use(express());
-
-const port = 8000;
-
-app.use(cors());
-
-var server = app.listen(
-  port,
-  console.log(`Server is running on the port no: ${port} `.green)
-);
-
-const io = socket(server);
+const {
+  get_Current_User,
+  user_Disconnect,
+  join_User,
+  get_logged_users,
+} = require("./dummyuser");
 
 //initializing the socket io connection
 io.on("connection", (socket) => {
@@ -26,11 +15,14 @@ io.on("connection", (socket) => {
     const p_user = join_User(socket.id, username, roomname);
     socket.join(p_user.room);
 
+    const users = get_logged_users().map((u) => u.username);
+
     //display a welcome message to the user who have joined a room
     socket.emit("message", {
       userId: p_user.id,
       username: p_user.username,
       text: `Welcome ${p_user.username}`,
+      users,
     });
 
     //displays a joined room message to all other room users except that particular user
@@ -38,6 +30,7 @@ io.on("connection", (socket) => {
       userId: p_user.id,
       username: p_user.username,
       text: `${p_user.username} has joined the chat`,
+      users,
     });
   });
 
