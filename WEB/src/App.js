@@ -1,42 +1,30 @@
-import Chat from "./chat/chat";
-import Process from "./process/process";
-import Home from "./home/home";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "./App.scss";
 import React from "react";
+import { HashRouter, Switch, Route } from "react-router-dom";
+import { ThemeProvider } from "@material-ui/core";
+
+import theme from "./theme";
+
 import io from "socket.io-client";
 
-const socket = io.connect("/");
+import Home from "./Home/Home";
+import Room from "./Room/Room";
 
-function Appmain(props) {
-  return (
-    <React.Fragment>
-      <div className="right">
-        <Chat
-          username={props.match.params.username}
-          roomname={props.match.params.roomname}
-          socket={socket}
-        />
-      </div>
-      <div className="left">
-        <Process />
-      </div>
-    </React.Fragment>
-  );
-}
+const socket = io.connect('/');
 
 function App() {
   return (
-    <Router>
-      <div className="App">
+    <ThemeProvider theme={theme}>
+      <HashRouter>
         <Switch>
           <Route path="/" exact>
             <Home socket={socket} />
           </Route>
-          <Route path="/chat/:roomname/:username" component={Appmain} />
+          <Route path="/room" exact>
+            <Room socket={socket} />
+          </Route>
         </Switch>
-      </div>
-    </Router>
+      </HashRouter>
+    </ThemeProvider>
   );
 }
 

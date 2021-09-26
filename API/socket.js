@@ -34,6 +34,10 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on('listen', (data) => {
+    console.log(data);
+  })
+
   //user sending message
   socket.on("chat", (text) => {
     //gets the room user and the message sent
